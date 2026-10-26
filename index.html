@@ -133,14 +133,14 @@
                 }
             });
 
-            await fetchMerchants();
+            await fetch Merchants();
 
             document.getElementById("searchInput").addEventListener("input", (e) => {
                 renderListings(e.target.value, currentCategory);
             });
         });
 
-        async function fetchMerchants() {
+        async function fetch Merchants() {
             const container = document.getElementById("listingsContainer");
             const { data, error } = await _supabase.from('merchants').select('*');
 
