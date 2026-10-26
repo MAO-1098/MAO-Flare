@@ -15,7 +15,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Onboarding Modal (Appears Only Once) -->
+    <!-- Onboarding Modal -->
     <div id="authModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
             <div class="text-center">
@@ -90,7 +90,7 @@
 
     <!-- Supabase Integration Script -->
     <script>
-        const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co/rest/v1/";
+        const SUPABASE_URL = "https://yyqhtxsysoypnruqegn.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5cWh0eHN5c295dnBucnVxZWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NjY4MTcsImV4cCI6MjEwODU0MjgxN30.qc1c7D4m-8r3wZS_u8oPWiqVN0ny1vV5bKMUiyI5IEE";
         
         const { createClient } = supabase;
@@ -133,20 +133,20 @@
                 }
             });
 
-            await fetch Merchants();
+            await fetchMerchants();
 
             document.getElementById("searchInput").addEventListener("input", (e) => {
                 renderListings(e.target.value, currentCategory);
             });
         });
 
-        async function fetch Merchants() {
+        async function fetchMerchants() {
             const container = document.getElementById("listingsContainer");
             const { data, error } = await _supabase.from('merchants').select('*');
 
             if (error) {
                 console.error("Error fetching merchants:", error);
-                container.innerHTML = `<div class="text-center text-red-400 py-6 text-sm">عذراً، حدث خطأ في تحميل البيانات. تأكد من صحة المفتاح وجودة الاتصال.</div>`;
+                container.innerHTML = `<div class="text-center text-red-400 py-6 text-sm">عذراً، حدث خطأ في تحميل البيانات.</div>`;
                 return;
             }
 
@@ -175,7 +175,7 @@
             });
             btnElement.className = "cat-btn bg-amber-400 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap transition";
             
-            const searchTerm = document.getElementById("searchInput").value;
+            const searchTerm = document.getElementById("searchInput.value") || document.getElementById("searchInput").value;
             renderListings(searchTerm, currentCategory);
         }
 
