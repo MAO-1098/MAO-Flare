@@ -36,7 +36,7 @@
 
     <!-- قسم إدارة المحلات والـ VIP والـ Top 10 -->
     <section class="space-y-3">
-        <h2 class="text-sm font-bold text-emerald-400">🏪 إدارة المحلات والتمييز (VIP & Top 10)</h2>
+        <h2 class="text-sm font-bold text-emerald-400">🏪 إدارة المحلات والتمييز والحالة</h2>
         <div id="merchantsContainer" class="space-y-2">
             <div class="text-center text-slate-500 py-3 text-xs">جاري تحميل المحلات...</div>
         </div>
@@ -59,11 +59,25 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL";
+        const SUPABASE_URL = "https://yyqhtxsysoypnruqegn.supabase.co";
+        const SUPABASE_KEY = "حط_المفتاح_الخاص_بك_هنا"; // استخدم مفتاح sb_publishable الخاص بـ flare
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        function checkAdminAuth() {
+            let pin = sessionStorage.getItem("admin_auth");
+            if (pin !== "1998") { // كلمة السر الخاصة بك
+                let inputPin = prompt("يا برنس، ادخل الرقم السري للأدمن:");
+                if (inputPin === "1998") {
+                    sessionStorage.setItem("admin_auth", "1998");
+                } else {
+                    alert("كلمة السر غير صحيحة!");
+                    window.location.href = "index.html";
+                }
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            checkAdminAuth();
             fetchReports();
             fetchPending();
             fetchMerchants();
@@ -145,13 +159,21 @@
                         <p class="text-[10px] text-slate-400">📍 ${item.street}</p>
                     </div>
                     <div class="flex gap-1.5 items-center">
+                        <button onclick="toggleShopStatus(${item.id}, ${item.is_open !== false ? 'false' : 'true'})" class="bg-slate-800 px-2 py-1 rounded-lg text-[10px] font-bold ${item.is_open !== false ? 'text-emerald-400' : 'text-red-400'}">
+                            ${item.is_open !== false ? '🟢 مفتوح' : '🔴 مغلق'}
+                        </button>
                         <button onclick="toggleTopTen(${item.id}, ${item.is_top_ten ? 'false' : 'true'})" class="bg-slate-800 text-amber-400 px-2 py-1 rounded-lg text-[10px] font-bold">
-                            ${item.is_top_ten ? 'إزالة Top 10' : 'إضافة Top 10 ⭐'}
+                            ${item.is_top_ten ? 'إزالة Top 10' : 'Top 10 ⭐'}
                         </button>
                         <button onclick="openVipModal(${item.id})" class="bg-amber-400/10 text-amber-400 border border-amber-400/30 px-2 py-1 rounded-lg text-[10px] font-bold">VIP ⚡</button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        async function toggleShopStatus(id, newStatus) {
+            await _supabase.from('merchants').update({ is_open: newStatus }).eq('id', id);
+            fetchMerchants();
         }
 
         async function toggleTopTen(id, status) {
