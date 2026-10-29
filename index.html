@@ -229,3 +229,87 @@
     </script>
 </body>
 </html>
+ener("submit", async (e) => {
+                e.preventDefault();
+                const shop_name = document.getElementById("reportShopName").value;
+                const reason = document.getElementById("reportReason").value;
+                const user_phone = localStorage.getItem("yalla_bina_phone") || "غير معروف";
+
+                await _supabase.from('reports').insert([{ shop_name, reason, user_phone }]);
+                alert("تم إرسال بلاغك للأدمن ومراجعته فوراً.");
+                toggleModal('reportModal', false);
+                document.getElementById("reportReason").value = "";
+            });
+
+            await fetchMerchants();
+            document.getElementById("searchInput").addEventListener("input", (e) => renderListings(allMerchants, e.target.value));
+        });
+
+        function toggleModal(modalId, show) {
+            const m = document.getElementById(modalId);
+            if (show) m.classList.remove("hidden"); else m.classList.add("hidden");
+        }
+
+        function openReportModal(shopName) {
+            document.getElementById("reportShopName").value = shopName;
+            document.getElementById("reportShopLabel").innerText = `الإبلاغ عن: ${shopName}`;
+            toggleModal('reportModal', true);
+        }
+
+        async function fetchMerchants() {
+            const { data } = await _supabase.from('merchants').select('*');
+            allMerchants = data || [];
+            
+            const vipShop = allMerchants.find(i => i.is_vip === true);
+            if (vipShop && vipShop.vip_banner_title) {
+                document.getElementById("vipBannerContainer").classList.remove("hidden");
+                document.getElementById("vipTitleText").innerText = vipShop.vip_banner_title;
+                document.getElementById("vipDescText").innerText = vipShop.vip_banner_desc || "";
+            }
+
+            renderListings(allMerchants, "");
+        }
+
+        function renderListings(list, query) {
+            const container = document.getElementById("listingsContainer");
+            let filtered = list.filter(i => i.name.toLowerCase().includes(query.toLowerCase()) || i.street.toLowerCase().includes(query.toLowerCase()));
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 py-10 text-sm">مفيش نتائج مطابقة.. اقترح إضافته! 🛵</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => `
+                <div class="bg-slate-800/60 border ${item.is_top_ten ? 'border-amber-500/50' : 'border-slate-700/60'} rounded-2xl p-4 flex justify-between items-center relative shadow-lg">
+                    ${item.is_top_ten ? '<span class="absolute -top-2 -right-2 bg-amber-400 text-slate-950 text-[9px] font-black px-2 py-0.5 rounded-full shadow">Top 10 ⭐</span>' : ''}
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-base text-white">${item.name}</h3>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${item.is_open !== false ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                                ${item.is_open !== false ? '🟢 مفتوح' : '🔴 مغلق'}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">📍 ${item.street}</p>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="openReportModal('${item.name}')" class="text-slate-500 hover:text-red-400 text-xs px-1" title="إبلاغ">⚠️</button>
+                        <a href="https://wa.me/?text=${encodeURIComponent(`شوف المحل ده في دليل المسلة: *${item.name}* \n📍 العنوان: ${item.street}\n📞 التليفون: ${item.phone}`)}" target="_blank" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-2.5 rounded-xl text-xs font-bold" title="مشاركة">💬</a>
+                        <a href="tel:${item.phone}" class="bg-amber-400 text-slate-950 p-2.5 rounded-xl font-bold text-sm">📞</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterTopTen(btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl whitespace-nowrap");
+            btn.className = "cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap";
+            renderListings(allMerchants.filter(i => i.is_top_ten === true), "");
+        }
+        function filterCategory(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl whitespace-nowrap");
+            btn.className = "cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap";
+            renderListings(allMerchants, "");
+        }
+    </script>
+</body>
+</html>
