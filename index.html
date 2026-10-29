@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <!-- نافذة اقتراح محل جديد (Input) -->
+    <!-- نافذة اقتراح محل جديد -->
     <div id="addMerchantModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-3 shadow-2xl">
             <div class="flex justify-between items-center">
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <!-- نافذة الإبلاغ عن تلاعب (Input) -->
+    <!-- نافذة الإبلاغ عن تلاعب -->
     <div id="reportModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-3 shadow-2xl">
             <div class="flex justify-between items-center">
@@ -77,7 +77,7 @@
         </div>
     </header>
 
-    <!-- بانر الـ VIP (Output حي من قاعدة البيانات) -->
+    <!-- بانر الـ VIP -->
     <div id="vipBannerContainer" class="max-w-md mx-auto w-full p-4 hidden">
         <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-4 text-slate-950 shadow-xl relative overflow-hidden">
             <span class="bg-slate-950 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-md">إعلان VIP ⭐</span>
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <!-- المحتوى الرئيسي (Output) -->
+    <!-- المحتوى الرئيسي -->
     <main class="max-w-md mx-auto p-4 w-full flex-grow space-y-4">
         <input type="text" id="searchInput" placeholder="ابحث عن نشاط أو شارع..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
         
@@ -101,8 +101,8 @@
     </main>
 
     <script>
-        const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL";
+        const SUPABASE_URL = "https://yyqhtxsysoypnruqegn.supabase.co";
+        const SUPABASE_KEY = "حط_المفتاح_الخاص_بك_هنا"; // استخدم مفتاح sb_publishable الخاص بـ flare
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let generatedOtp = "", tempPhone = "", tempArea = "", allMerchants = [];
@@ -196,14 +196,20 @@
             }
 
             container.innerHTML = filtered.map(item => `
-                <div class="bg-slate-800/60 border ${item.is_top_ten ? 'border-amber-500/50' : 'border-slate-700/60'} rounded-2xl p-4 flex justify-between items-center relative">
+                <div class="bg-slate-800/60 border ${item.is_top_ten ? 'border-amber-500/50' : 'border-slate-700/60'} rounded-2xl p-4 flex justify-between items-center relative shadow-lg">
                     ${item.is_top_ten ? '<span class="absolute -top-2 -right-2 bg-amber-400 text-slate-950 text-[9px] font-black px-2 py-0.5 rounded-full shadow">Top 10 ⭐</span>' : ''}
                     <div>
-                        <h3 class="font-bold text-base text-white">${item.name}</h3>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-base text-white">${item.name}</h3>
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${item.is_open !== false ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                                ${item.is_open !== false ? '🟢 مفتوح' : '🔴 مغلق'}
+                            </span>
+                        </div>
                         <p class="text-xs text-slate-400 mt-1">📍 ${item.street}</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5">
                         <button onclick="openReportModal('${item.name}')" class="text-slate-500 hover:text-red-400 text-xs px-1" title="إبلاغ">⚠️</button>
+                        <a href="https://wa.me/?text=${encodeURIComponent(`شوف المحل ده في دليل المسلة: *${item.name}* \n📍 العنوان: ${item.street}\n📞 التليفون: ${item.phone}`)}" target="_blank" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-2.5 rounded-xl text-xs font-bold" title="مشاركة">💬</a>
                         <a href="tel:${item.phone}" class="bg-amber-400 text-slate-950 p-2.5 rounded-xl font-bold text-sm">📞</a>
                     </div>
                 </div>
@@ -214,6 +220,11 @@
             document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl whitespace-nowrap");
             btn.className = "cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap";
             renderListings(allMerchants.filter(i => i.is_top_ten === true), "");
+        }
+        function filterCategory(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl whitespace-nowrap");
+            btn.className = "cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap";
+            renderListings(allMerchants, "");
         }
     </script>
 </body>
