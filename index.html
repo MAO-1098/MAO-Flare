@@ -3,146 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>يلا بينا | دليل المسلة</title>
+    <title>دليل فلير | منصه الخدمات المحليه</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        body { font-family: 'Cairo', sans-serif; background-color: #0b0f19; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen pb-20">
 
-    <!-- نافذة تسجيل الدخول الذكية (One-Time Only مع اختيار المنطقة والاهتمامات) -->
-    <div id="authModal" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-            <h2 class="text-2xl font-black text-amber-400 text-center">🚀 أهلاً بيك في دليل المسلة</h2>
-            <p class="text-xs text-slate-400 text-center">سجل بياناتك لمرة واحدة لاستكشاف خدمات دار السلام.</p>
-
-            <form id="step1Form" class="space-y-3">
-                <input type="tel" id="userPhoneInput" required pattern="^01[0-2,5]{1}[0-9]{8}$" placeholder="رقم الموبايل (010xxxxxxxx)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white text-left" dir="ltr">
-                
-                <select id="userAreaInput" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
-                    <option value="" disabled selected>اختر منطقتك في دار السلام</option>
-                    <option value="المسلة">المسلة</option>
-                    <option value="شارع الفتح">شارع الفتح</option>
-                    <option value="طراد النيل">طراد النيل</option>
-                    <option value="ميدان المحطة">ميدان المحطة</option>
-                    <option value="حدائق المعادي">حدائق المعادي</option>
-                </select>
-
-                <select id="userInterestInput" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
-                    <option value="" disabled selected>أكثر نشاط مهتم به؟</option>
-                    <option value="مطاعم وكافيهات">مطاعم وكافيهات 🍔</option>
-                    <option value="صيدليات وأدوية">صيدليات وأدوية 💊</option>
-                    <option value="خدمات وصيانة منزلية">خدمات وصيانة منزلية 🔧</option>
-                    <option value="تسوق وملابس">تسوق وملابس 👕</option>
-                </select>
-
-                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold py-3 rounded-xl text-sm shadow-lg">إرسال كود التحقق 💬</button>
-            </form>
-
-            <form id="step2Form" class="space-y-3 hidden">
-                <div class="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-center">
-                    <p class="text-xs text-amber-300">تم تجهيز كود التحقق الخاص بك على واتساب!</p>
-                    <a id="waOtpBtn" href="#" target="_blank" class="inline-block mt-2 bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg">اضغط لفتح الواتساب واستلام الكود 📲</a>
-                </div>
-                <input type="text" id="otpCodeInput" maxlength="4" required placeholder="----" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-lg font-bold tracking-widest text-white" dir="ltr">
-                <button type="submit" class="w-full bg-emerald-500 text-slate-950 font-bold py-3 rounded-xl text-sm">تأكيد الدخول والدخول للموقع ⚡</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- نافذة اقتراح محل جديد -->
-    <div id="addMerchantModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-3 shadow-2xl">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-black text-amber-400">🏪 اقترح إضافة محل</h2>
-                <button onclick="toggleModal('addMerchantModal', false)" class="text-slate-400">✕</button>
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-4 py-3 flex justify-between items-center shadow-lg">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center shadow-md shadow-orange-500/20 text-white font-black text-xl">F</div>
+            <div>
+                <h1 class="font-black text-lg text-white leading-none">فلير <span class="text-amber-500 text-xs font-normal">Flair</span></h1>
+                <p class="text-[10px] text-slate-400">دليلك المحلي الأسرع</p>
             </div>
-            <form id="addMerchantForm" class="space-y-2">
-                <input type="text" id="newShopName" required placeholder="اسم المحل أو النشاط" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-                <input type="text" id="newShopCategory" required placeholder="التصنيف (مطاعم، صيدليات...)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-                <input type="text" id="newShopStreet" required placeholder="العنوان / الشارع بالتفصيل" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-                <input type="tel" id="newShopPhone" required placeholder="رقم الهاتف" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white text-left" dir="ltr">
-                <button type="submit" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">إرسال للمراجعة 📋</button>
-            </form>
         </div>
-    </div>
-
-    <!-- نافذة الإبلاغ عن تلاعب -->
-    <div id="reportModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-3 shadow-2xl">
-            <div class="flex justify-between items-center">
-                <h2 class="text-lg font-black text-red-400">⚠️ إبلاغ عن تلاعب أو مشكلة</h2>
-                <button onclick="toggleModal('reportModal', false)" class="text-slate-400">✕</button>
-            </div>
-            <form id="reportForm" class="space-y-2">
-                <input type="hidden" id="reportShopName">
-                <p id="reportShopLabel" class="text-xs text-slate-300 font-bold"></p>
-                <textarea id="reportReason" rows="3" required placeholder="تفاصيل المشكلة (السعر غير صحيح، المحل مغلق...)" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white"></textarea>
-                <button type="submit" class="w-full bg-red-500 text-white font-bold py-2.5 rounded-xl text-xs">إرسال البلاغ للأدمن 🚨</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- الهيدر -->
-    <header class="bg-slate-900/80 p-4 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-black text-amber-400">يلا بينا <span class="text-xs text-slate-400 block font-normal">دليل المسلة</span></h1>
-            <button onclick="toggleModal('addMerchantModal', true)" class="bg-amber-400/10 border border-amber-400/30 text-amber-400 text-xs px-3 py-1.5 rounded-xl font-bold">➕ اقترح محل</button>
+        <div class="flex items-center gap-2">
+            <a href="suggest.html" class="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-plus-circle"></i> اقترح محل
+            </a>
         </div>
     </header>
 
-    <!-- بانر الـ VIP -->
-    <div id="vipBannerContainer" class="max-w-md mx-auto w-full p-4 hidden">
-        <div class="bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl p-4 text-slate-950 shadow-xl relative overflow-hidden">
-            <span class="bg-slate-950 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded-md">إعلان VIP ⭐</span>
-            <h3 id="vipTitleText" class="font-black text-base mt-2"></h3>
-            <p id="vipDescText" class="text-xs mt-1 text-slate-900"></p>
-        </div>
-    </div>
+    <main class="max-w-md mx-auto p-4 space-y-5">
 
-    <!-- المحتوى الرئيسي -->
-    <main class="max-w-md mx-auto p-4 w-full flex-grow space-y-4">
-        <input type="text" id="searchInput" placeholder="ابحث عن نشاط أو شارع..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400">
-        
-        <div class="flex gap-2 overflow-x-auto pb-2" id="categoriesBar">
-            <button onclick="filterCategory('all', this)" class="cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap">الكل</button>
-            <button onclick="filterTopTen(this)" class="cat-btn bg-slate-800 text-amber-400 border border-amber-500/30 text-xs font-bold px-4 py-2 rounded-xl whitespace-nowrap">🔥 الـ Top 10</button>
+        <!-- VIP Banner Section (Monetization Real Estate) -->
+        <div id="vipBannerContainer" class="hidden relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-600 via-orange-600 to-amber-500 p-5 shadow-xl shadow-orange-500/10 border border-amber-400/30">
+            <div class="absolute -left-4 -bottom-4 text-white/10 text-8xl font-black pointer-events-none"><i class="fa-solid fa-crown"></i></div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-1.5 text-amber-200 text-xs font-bold mb-1 bg-black/20 w-fit px-2.5 py-0.5 rounded-full">
+                    <i class="fa-solid fa-star text-amber-300"></i> إعلان VIP مميز
+                </div>
+                <h3 id="vipTitleText" class="text-xl font-black text-white mb-1">عروض حصرية</h3>
+                <p id="vipDescText" class="text-xs text-amber-100/90 leading-relaxed">اكتشف أقوى الخصومات والعروض المتاحة لفترة محدودة من رواد الدليل.</p>
+            </div>
         </div>
 
-        <div id="listingsContainer" class="space-y-3">
-            <div class="text-center text-slate-400 py-10 text-sm">جاري تحميل البيانات... ⏳</div>
+        <!-- Smart Search & Region Bar -->
+        <div class="space-y-3">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
+                <input type="text" id="searchInput" oninput="filterListings()" placeholder="ابحث عن نشاط، خدمة، أو سباك، كهربائي..." class="w-full bg-slate-900/80 border border-slate-700/80 rounded-2xl pr-11 pl-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 transition shadow-inner">
+            </div>
+            
+            <!-- Region Selector -->
+            <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar text-xs">
+                <button onclick="selectRegion('الكل')" class="region-btn bg-amber-500 text-slate-950 font-bold px-4 py-2 rounded-xl whitespace-nowrap transition shadow">🌐 كل المناطق</button>
+                <button onclick="selectRegion('دار السلام')" class="region-btn bg-slate-800 text-slate-300 font-semibold px-4 py-2 rounded-xl whitespace-nowrap transition border border-slate-700">دار السلام / المسلة</button>
+                <button onclick="selectRegion('حدائق المعادي')" class="region-btn bg-slate-800 text-slate-300 font-semibold px-4 py-2 rounded-xl whitespace-nowrap transition border border-slate-700">حدائق المعادي</button>
+            </div>
         </div>
+
+        <!-- Visual Categories Grid (Categories with Icons) -->
+        <div>
+            <div class="flex justify-between items-center mb-2 px-1">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">الأقسام والخدمات</h2>
+                <span class="text-[10px] text-amber-500 font-semibold">تصفح سريع</span>
+            </div>
+            <div class="grid grid-cols-4 gap-2.5 text-center">
+                <button onclick="filterCategory('الكل')" class="cat-btn flex flex-col items-center justify-center p-3 rounded-2xl glass-card hover:border-amber-500/50 transition group bg-amber-500/10 border-amber-500/40">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center mb-1 text-sm group-hover:scale-110 transition"><i class="fa-solid fa-border-all"></i></div>
+                    <span class="text-[11px] font-bold text-white">الكل</span>
+                </button>
+                <button onclick="filterCategory('مطاعم وكافيهات')" class="cat-btn flex flex-col items-center justify-center p-3 rounded-2xl glass-card hover:border-amber-500/50 transition group">
+                    <div class="w-9 h-9 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center mb-1 text-sm group-hover:scale-110 transition"><i class="fa-solid fa-utensils"></i></div>
+                    <span class="text-[10px] font-medium text-slate-300">مأكولات</span>
+                </button>
+                <button onclick="filterCategory('صيدليات وأدوية')" class="cat-btn flex flex-col items-center justify-center p-3 rounded-2xl glass-card hover:border-amber-500/50 transition group">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-1 text-sm group-hover:scale-110 transition"><i class="fa-solid fa-pills"></i></div>
+                    <span class="text-[10px] font-medium text-slate-300">صيدليات</span>
+                </button>
+                <button onclick="filterCategory('خدمات وصيانة منزلية')" class="cat-btn flex flex-col items-center justify-center p-3 rounded-2xl glass-card hover:border-amber-500/50 transition group">
+                    <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-1 text-sm group-hover:scale-110 transition"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <span class="text-[10px] font-medium text-slate-300">صنايعية</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Listings Section (Grid / Card Minimalist Design) -->
+        <div class="space-y-3">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">النتائج المتاحة</h2>
+                <button onclick="filterTopTen()" id="topTenBtn" class="text-xs bg-slate-800 text-amber-400 border border-slate-700 px-3 py-1 rounded-xl font-bold flex items-center gap-1 shadow">
+                    <i class="fa-solid fa-fire text-orange-500"></i> الـ Top 10 🔥
+                </button>
+            </div>
+
+            <!-- Dynamic Listings Container -->
+            <div id="listingsContainer" class="grid grid-cols-1 gap-3">
+                <!-- Data will be loaded dynamically via JS -->
+                <div class="text-center py-10 text-slate-500 text-xs">جاري تحميل أقوى محلات المنطقة...</div>
+            </div>
+        </div>
+
     </main>
 
+    <!-- Supabase Configuration & Core Logic -->
     <script>
-        const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL"; // حط مفتاح sb_publishable الخاص بـ flare هنا
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co" ;
+        const SUPABASE_ANON_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL" ;
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let generatedOtp = "", tempPhone = "", tempArea = "", tempInterest = "", allMerchants = [];
+        let allMerchants = [];
+        let currentCategory = 'الكل';
+        let currentRegion = 'الكل';
+        let showOnlyTopTen = false;
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            if (!localStorage.getItem("yalla_bina_phone")) {
-                document.getElementById("authModal").classList.remove("hidden");
+        async function fetchMerchants() {
+            const { data, error } = await _supabase.from('merchants').select('*');
+            if (error) {
+                console.error('Error fetching:', error);
+                return;
+            }
+            allMerchants = data || [];
+            
+            // تحقق من وجود محل VIP مفعل لعرض البانر
+            const vipShop = allMerchants.find(i => i.is_vip === true && i.vip_banner_title);
+            const vipContainer = document.getElementById("vipBannerContainer");
+            if (vipShop) {
+                vipContainer.classList.remove("hidden");
+                document.getElementById("vipTitleText").innerText = vipShop.vip_banner_title;
+                document.getElementById("vipDescText").innerText = vipShop.vip_banner_desc || "عروض حصرية لفترة محدودة من دليل فلير.";
+            } else {
+                vipContainer.classList.add("hidden");
             }
 
-            document.getElementById("step1Form").addEventListener("submit", (e) => {
-                e.preventDefault();
-                tempPhone = document.getElementById("userPhoneInput").value;
-                tempArea = document.getElementById("userAreaInput").value;
-                tempInterest = document.getElementById("userInterestInput").value;
+            renderListings(allMerchants);
+        }
+
+        function renderListings(merchants) {
+            const container = document.getElementById("listingsContainer");
+            container.innerHTML = "";
+
+            if (merchants.length === 0) {
+                container.innerHTML = `
+                    <div class="glass-card rounded-2xl p-8 text-center space-y-2">
+                        <i class="fa-solid fa-box-open text-3xl text-slate-600"></i>
+                        <p class="text-xs text-slate-400">عذراً، مفيش نتائج مطابقة للبحث حالياً.</p>
+                    </div>`;
+                return;
+            }
+
+            merchants.forEach(item => {
+                const statusBadge = item.is_open 
+                    ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>مفتوح</span>` 
+                    : `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] px-2.5 py-0.5 rounded-full font-bold">مغلق</span>`;
+
+                const topBadge = item.is_top_ten 
+                    ? `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1"><i class="fa-solid fa-fire text-orange-500"></i> Top 10</span>` 
+                    : '';
+
+                const cardHTML = `
+                    <div class="glass-card rounded-2xl p-4 flex items-center justify-between gap-3 hover:border-slate-700 transition shadow-md">
+                        <div class="flex items-start gap-3 overflow-hidden">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 text-amber-400 text-lg shadow-inner">
+                                <i class="fa-solid fa-store"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                    <h3 class="font-bold text-sm text-white truncate">${item.name}</h3>
+                                    ${topBadge}
+                                </div>
+                                <p class="text-xs text-slate-400 truncate mb-2"><i class="fa-solid fa-location-dot text-amber-500 ml-1"></i>${item.street}</p>
+                                <div class="flex items-center gap-2">
+                                    ${statusBadge}
+                                    <span class="text-[10px] text-slate-500 bg-slate-800/80 px-2 py-0.5 rounded-md">${item.category || 'خدمات'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2 shrink-0">
+                            <a href="tel:${item.phone}" class="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition shadow" title="اتصال مباشر">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </a>
+                            <a href="https://wa.me/2${item.phone}" target="_blank" class="w-10 h-10 rounded-xl bg-sky-600/20 text-sky-400 border border-sky-500/30 flex items-center justify-center hover:bg-sky-600 hover:text-white transition shadow" title="محادثة واتساب">
+                                <i class="fa-brands fa-whatsapp text-sm"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            applyFilters();
+        }
+
+        function selectRegion(region) {
+            currentRegion = region;
+            applyFilters();
+        }
+
+        function filterTopTen() {
+            showOnlyTopTen = !showOnlyTopTen;
+            const btn = document.getElementById("topTenBtn");
+            if (showOnlyTopTen) {
+                btn.classList.add("bg-amber-500", "text-slate-950", "border-amber-400");
+                btn.classList.remove("bg-slate-800", "text-amber-400");
+            } else {
+                btn.classList.remove("bg-amber-500", "text-slate-950", "border-amber-400");
+                btn.classList.add("bg-slate-800", "text-amber-400");
+            }
+            applyFilters();
+        }
+
+        function filterListings() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            
+            let filtered = allMerchants.filter(item => {
+                const matchesSearch = item.name.toLowerCase().includes(query) || item.street.toLowerCase().includes(query) || (item.category && item.category.toLowerCase().includes(query));
+                const matchesCategory = currentCategory === 'الكل' || item.category === currentCategory;
+                const matchesTopTen = !showOnlyTopTen || item.is_top_ten === true;
                 
-                generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-                document.getElementById("waOtpBtn").href = `https://wa.me/2${tempPhone}?text=${encodeURIComponent(`كود التحقق الخاص بك في دليل المسلة (يلا بينا) هو: ${generatedOtp}`)}`;
-                
-                document.getElementById("step1Form").classList.add("hidden");
-                document.getElementById("step2Form").classList.remove("hidden");
+                return matchesSearch && matchesCategory && matchesTopTen;
             });
 
-            document.getElementById("step2Form").addEventListener("submit", async (e) => {
+            renderListings(filtered);
+        }
+
+        // تشغيل الدالة عند تحميل الصفحة
+        window.onload = fetchMerchants;
+    </script>
+</body>
+</html>
+ddEventListener("submit", async (e) => {
                 e.preventDefault();
                 if (document.getElementById("otpCodeInput").value === generatedOtp) {
                     await _supabase.from('users').insert([{ phone: tempPhone, area: tempArea, interests: tempInterest }]);
