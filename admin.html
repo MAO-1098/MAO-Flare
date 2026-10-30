@@ -34,7 +34,7 @@
         </div>
     </section>
 
-    <!-- قسم إدارة المحلات والـ VIP والـ Top 10 -->
+    <!-- قسم إدارة المحلات والتمييز والحالة -->
     <section class="space-y-3">
         <h2 class="text-sm font-bold text-emerald-400">🏪 إدارة المحلات والتمييز والحالة</h2>
         <div id="merchantsContainer" class="space-y-2">
@@ -60,12 +60,12 @@
 
     <script>
         const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL"; // استخدم مفتاح sb_publishable الخاص بـ flare
+        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL"; // حط مفتاح sb_publishable الخاص بـ flare هنا
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function checkAdminAuth() {
             let pin = sessionStorage.getItem("admin_auth");
-            if (pin !== "1998") { // كلمة السر الخاصة بك
+            if (pin !== "1998") {
                 let inputPin = prompt("يا برنس، ادخل الرقم السري للأدمن:");
                 if (inputPin === "1998") {
                     sessionStorage.setItem("admin_auth", "1998");
@@ -179,6 +179,29 @@
         async function toggleTopTen(id, status) {
             await _supabase.from('merchants').update({ is_top_ten: status }).eq('id', id);
             fetchMerchants();
+        }
+
+        function openVipModal(id) {
+            document.getElementById("vipShopId").value = id;
+            document.getElementById("vipModal").classList.remove("hidden");
+        }
+        function closeVipModal() {
+            document.getElementById("vipModal").classList.add("hidden");
+        }
+        async function approveShop(id, name, category, street, phone) {
+            await _supabase.from('merchants').insert([{ name, category, street, phone, is_open: true, has_delivery: true, is_top_ten: false, is_vip: false }]);
+            await deletePending(id);
+            fetchPending();
+            fetchMerchants();
+        }
+        async function deletePending(id) {
+            await _supabase.from('pending_merchants').delete().eq('id', id);
+            fetchPending();
+        }
+    </script>
+</body>
+</html>
+erchants();
         }
 
         function openVipModal(id) {
