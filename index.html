@@ -13,25 +13,42 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- نافذة تسجيل الدخول والـ OTP -->
-    <div id="authModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden">
+    <!-- نافذة تسجيل الدخول الذكية (One-Time Only مع اختيار المنطقة والاهتمامات) -->
+    <div id="authModal" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
-            <h2 class="text-2xl font-black text-amber-400 text-center">🚀 يلا بينا!</h2>
-            <p class="text-xs text-slate-400 text-center">سجل رقمك لمرة واحدة لاستكشاف خدمات دار السلام.</p>
+            <h2 class="text-2xl font-black text-amber-400 text-center">🚀 أهلاً بيك في دليل المسلة</h2>
+            <p class="text-xs text-slate-400 text-center">سجل بياناتك لمرة واحدة لاستكشاف خدمات دار السلام.</p>
 
             <form id="step1Form" class="space-y-3">
-                <input type="tel" id="userPhoneInput" required pattern="^01[0-2,5]{1}[0-9]{8}$" placeholder="010xxxxxxxx" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white text-left" dir="ltr">
-                <input type="text" id="userAreaInput" required placeholder="المنطقة (مثلاً: شارع الفتح)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
-                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold py-3 rounded-xl">إرسال كود التحقق 💬</button>
+                <input type="tel" id="userPhoneInput" required pattern="^01[0-2,5]{1}[0-9]{8}$" placeholder="رقم الموبايل (010xxxxxxxx)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white text-left" dir="ltr">
+                
+                <select id="userAreaInput" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+                    <option value="" disabled selected>اختر منطقتك في دار السلام</option>
+                    <option value="المسلة">المسلة</option>
+                    <option value="شارع الفتح">شارع الفتح</option>
+                    <option value="طراد النيل">طراد النيل</option>
+                    <option value="ميدان المحطة">ميدان المحطة</option>
+                    <option value="حدائق المعادي">حدائق المعادي</option>
+                </select>
+
+                <select id="userInterestInput" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white">
+                    <option value="" disabled selected>أكثر نشاط مهتم به؟</option>
+                    <option value="مطاعم وكافيهات">مطاعم وكافيهات 🍔</option>
+                    <option value="صيدليات وأدوية">صيدليات وأدوية 💊</option>
+                    <option value="خدمات وصيانة منزلية">خدمات وصيانة منزلية 🔧</option>
+                    <option value="تسوق وملابس">تسوق وملابس 👕</option>
+                </select>
+
+                <button type="submit" class="w-full bg-amber-400 text-slate-950 font-bold py-3 rounded-xl text-sm shadow-lg">إرسال كود التحقق 💬</button>
             </form>
 
             <form id="step2Form" class="space-y-3 hidden">
                 <div class="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl text-center">
-                    <p class="text-xs text-amber-300">تم تجهيز كود التحقق الخاص بك!</p>
-                    <a id="waOtpBtn" href="#" target="_blank" class="inline-block mt-2 bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg">افتح واتساب للحصول على الكود 📲</a>
+                    <p class="text-xs text-amber-300">تم تجهيز كود التحقق الخاص بك على واتساب!</p>
+                    <a id="waOtpBtn" href="#" target="_blank" class="inline-block mt-2 bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-lg">اضغط لفتح الواتساب واستلام الكود 📲</a>
                 </div>
                 <input type="text" id="otpCodeInput" maxlength="4" required placeholder="----" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-lg font-bold tracking-widest text-white" dir="ltr">
-                <button type="submit" class="w-full bg-emerald-500 text-slate-950 font-bold py-3 rounded-xl">تأكيد الدخول ⚡</button>
+                <button type="submit" class="w-full bg-emerald-500 text-slate-950 font-bold py-3 rounded-xl text-sm">تأكيد الدخول والدخول للموقع ⚡</button>
             </form>
         </div>
     </div>
@@ -46,7 +63,7 @@
             <form id="addMerchantForm" class="space-y-2">
                 <input type="text" id="newShopName" required placeholder="اسم المحل أو النشاط" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
                 <input type="text" id="newShopCategory" required placeholder="التصنيف (مطاعم، صيدليات...)" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-                <input type="text" id="newShopStreet" required placeholder="العنوان / الشارع" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                <input type="text" id="newShopStreet" required placeholder="العنوان / الشارع بالتفصيل" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
                 <input type="tel" id="newShopPhone" required placeholder="رقم الهاتف" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white text-left" dir="ltr">
                 <button type="submit" class="w-full bg-emerald-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs">إرسال للمراجعة 📋</button>
             </form>
@@ -88,7 +105,7 @@
 
     <!-- المحتوى الرئيسي -->
     <main class="max-w-md mx-auto p-4 w-full flex-grow space-y-4">
-        <input type="text" id="searchInput" placeholder="ابحث عن نشاط أو شارع..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white">
+        <input type="text" id="searchInput" placeholder="ابحث عن نشاط أو شارع..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400">
         
         <div class="flex gap-2 overflow-x-auto pb-2" id="categoriesBar">
             <button onclick="filterCategory('all', this)" class="cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap">الكل</button>
@@ -102,20 +119,25 @@
 
     <script>
         const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL";
+        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL"; // حط مفتاح sb_publishable الخاص بـ flare هنا
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let generatedOtp = "", tempPhone = "", tempArea = "", allMerchants = [];
+        let generatedOtp = "", tempPhone = "", tempArea = "", tempInterest = "", allMerchants = [];
 
         document.addEventListener("DOMContentLoaded", async () => {
-            if (!localStorage.getItem("yalla_bina_phone")) document.getElementById("authModal").classList.remove("hidden");
+            if (!localStorage.getItem("yalla_bina_phone")) {
+                document.getElementById("authModal").classList.remove("hidden");
+            }
 
             document.getElementById("step1Form").addEventListener("submit", (e) => {
                 e.preventDefault();
                 tempPhone = document.getElementById("userPhoneInput").value;
                 tempArea = document.getElementById("userAreaInput").value;
+                tempInterest = document.getElementById("userInterestInput").value;
+                
                 generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-                document.getElementById("waOtpBtn").href = `https://wa.me/2${tempPhone}?text=${encodeURIComponent(`كود التحقق الخاص بك في دليل المسلة هو: ${generatedOtp}`)}`;
+                document.getElementById("waOtpBtn").href = `https://wa.me/2${tempPhone}?text=${encodeURIComponent(`كود التحقق الخاص بك في دليل المسلة (يلا بينا) هو: ${generatedOtp}`)}`;
+                
                 document.getElementById("step1Form").classList.add("hidden");
                 document.getElementById("step2Form").classList.remove("hidden");
             });
@@ -123,12 +145,12 @@
             document.getElementById("step2Form").addEventListener("submit", async (e) => {
                 e.preventDefault();
                 if (document.getElementById("otpCodeInput").value === generatedOtp) {
-                    await _supabase.from('users').insert([{ phone: tempPhone, area: tempArea }]);
+                    await _supabase.from('users').insert([{ phone: tempPhone, area: tempArea, interests: tempInterest }]);
                     localStorage.setItem("yalla_bina_phone", tempPhone);
                     document.getElementById("authModal").classList.add("hidden");
-                    alert("تم التحقق بنجاح! أهلاً بك 🎉");
+                    alert("تم التحقق وتسجيل البيانات بنجاح! أهلاً بك 🎉");
                 } else {
-                    alert("الكود غير صحيح.");
+                    alert("كود التحقق غير صحيح، حاول مرة أخرى.");
                 }
             });
 
@@ -140,7 +162,7 @@
                 const phone = document.getElementById("newShopPhone").value;
 
                 await _supabase.from('pending_merchants').insert([{ name, category, street, phone, status: 'pending' }]);
-                alert("تم إرسال طلبك للمراجعة!");
+                alert("تم إرسال طلبك للمراجعة بنجاح!");
                 toggleModal('addMerchantModal', false);
                 document.getElementById("addMerchantForm").reset();
             });
@@ -209,92 +231,8 @@
                     </div>
                     <div class="flex items-center gap-1.5">
                         <button onclick="openReportModal('${item.name}')" class="text-slate-500 hover:text-red-400 text-xs px-1" title="إبلاغ">⚠️</button>
-                        <a href="https://wa.me/?text=${encodeURIComponent(`شوف المحل ده في دليل المسلة: *${item.name}* \n📍 العنوان: ${item.street}\n📞 التليفون: ${item.phone}`)}" target="_blank" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-2.5 rounded-xl text-xs font-bold" title="مشاركة">💬</a>
-                        <a href="tel:${item.phone}" class="bg-amber-400 text-slate-950 p-2.5 rounded-xl font-bold text-sm">📞</a>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filterTopTen(btn) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl whitespace-nowrap");
-            btn.className = "cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap";
-            renderListings(allMerchants.filter(i => i.is_top_ten === true), "");
-        }
-        function filterCategory(cat, btn) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.className = "cat-btn bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl whitespace-nowrap");
-            btn.className = "cat-btn bg-amber-400 text-slate-950 text-xs font-black px-4 py-2 rounded-xl whitespace-nowrap";
-            renderListings(allMerchants, "");
-        }
-    </script>
-</body>
-</html>
-ener("submit", async (e) => {
-                e.preventDefault();
-                const shop_name = document.getElementById("reportShopName").value;
-                const reason = document.getElementById("reportReason").value;
-                const user_phone = localStorage.getItem("yalla_bina_phone") || "غير معروف";
-
-                await _supabase.from('reports').insert([{ shop_name, reason, user_phone }]);
-                alert("تم إرسال بلاغك للأدمن ومراجعته فوراً.");
-                toggleModal('reportModal', false);
-                document.getElementById("reportReason").value = "";
-            });
-
-            await fetchMerchants();
-            document.getElementById("searchInput").addEventListener("input", (e) => renderListings(allMerchants, e.target.value));
-        });
-
-        function toggleModal(modalId, show) {
-            const m = document.getElementById(modalId);
-            if (show) m.classList.remove("hidden"); else m.classList.add("hidden");
-        }
-
-        function openReportModal(shopName) {
-            document.getElementById("reportShopName").value = shopName;
-            document.getElementById("reportShopLabel").innerText = `الإبلاغ عن: ${shopName}`;
-            toggleModal('reportModal', true);
-        }
-
-        async function fetchMerchants() {
-            const { data } = await _supabase.from('merchants').select('*');
-            allMerchants = data || [];
-            
-            const vipShop = allMerchants.find(i => i.is_vip === true);
-            if (vipShop && vipShop.vip_banner_title) {
-                document.getElementById("vipBannerContainer").classList.remove("hidden");
-                document.getElementById("vipTitleText").innerText = vipShop.vip_banner_title;
-                document.getElementById("vipDescText").innerText = vipShop.vip_banner_desc || "";
-            }
-
-            renderListings(allMerchants, "");
-        }
-
-        function renderListings(list, query) {
-            const container = document.getElementById("listingsContainer");
-            let filtered = list.filter(i => i.name.toLowerCase().includes(query.toLowerCase()) || i.street.toLowerCase().includes(query.toLowerCase()));
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-10 text-sm">مفيش نتائج مطابقة.. اقترح إضافته! 🛵</div>`;
-                return;
-            }
-
-            container.innerHTML = filtered.map(item => `
-                <div class="bg-slate-800/60 border ${item.is_top_ten ? 'border-amber-500/50' : 'border-slate-700/60'} rounded-2xl p-4 flex justify-between items-center relative shadow-lg">
-                    ${item.is_top_ten ? '<span class="absolute -top-2 -right-2 bg-amber-400 text-slate-950 text-[9px] font-black px-2 py-0.5 rounded-full shadow">Top 10 ⭐</span>' : ''}
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <h3 class="font-bold text-base text-white">${item.name}</h3>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${item.is_open !== false ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}">
-                                ${item.is_open !== false ? '🟢 مفتوح' : '🔴 مغلق'}
-                            </span>
-                        </div>
-                        <p class="text-xs text-slate-400 mt-1">📍 ${item.street}</p>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="openReportModal('${item.name}')" class="text-slate-500 hover:text-red-400 text-xs px-1" title="إبلاغ">⚠️</button>
-                        <a href="https://wa.me/?text=${encodeURIComponent(`شوف المحل ده في دليل المسلة: *${item.name}* \n📍 العنوان: ${item.street}\n📞 التليفون: ${item.phone}`)}" target="_blank" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-2.5 rounded-xl text-xs font-bold" title="مشاركة">💬</a>
-                        <a href="tel:${item.phone}" class="bg-amber-400 text-slate-950 p-2.5 rounded-xl font-bold text-sm">📞</a>
+                        <a href="https://wa.me/?text=${encodeURIComponent(`شوف المحل ده في دليل المسلة: *${item.name}* \n📍 العنوان: ${item.street}\n📞 التليفون: ${item.phone}`)}" target="_blank" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-2.5 rounded-xl text-xs font-bold" title="مشاركة عبر واتساب">💬</a>
+                        <a href="tel:${item.phone}" class="bg-amber-400 text-slate-950 p-2.5 rounded-xl font-bold text-sm" title="اتصال">📞</a>
                     </div>
                 </div>
             `).join('');
