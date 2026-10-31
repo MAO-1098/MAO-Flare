@@ -3,224 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم | أدمن دليل المسلة</title>
+    <title>لوحة القيادة | فلير</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #0f172a; color: #f8fafc; }
-    </style>
 </head>
-<body class="min-h-screen p-4 max-w-2xl mx-auto space-y-6">
-
-    <header class="flex justify-between items-center border-b border-slate-800 pb-4">
-        <h1 class="text-xl font-black text-amber-400">🛡️ لوحة تحكم الأدمن</h1>
-        <a href="index.html" class="text-xs bg-slate-800 px-3 py-2 rounded-xl text-slate-300">عرض الموقع 🌐</a>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6">
+    <header class="max-w-4xl mx-auto flex justify-between items-center pb-6 border-b border-slate-800">
+        <h1 class="text-xl font-bold text-amber-400">⚡ الإدارة المركزية - فلير</h1>
+        <button onclick="loadAdmin()" class="bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded-xl text-xs">🔄 تحديث البيانات</button>
     </header>
 
-    <!-- قسم البلاغات والشكاوي -->
-    <section class="space-y-3">
-        <h2 class="text-sm font-bold text-red-400">🚨 بلاغات التلاعب والشكاوي</h2>
-        <div id="reportsContainer" class="space-y-2">
-            <div class="text-center text-slate-500 py-3 text-xs">جاري تحميل البلاغات...</div>
-        </div>
-    </section>
-
-    <!-- قسم الطلبات المعلقة -->
-    <section class="space-y-3">
-        <h2 class="text-sm font-bold text-amber-400">📋 طلبات المحلات الجديدة (قيد المراجعة)</h2>
-        <div id="pendingContainer" class="space-y-2">
-            <div class="text-center text-slate-500 py-3 text-xs">جاري تحميل الطلبات...</div>
-        </div>
-    </section>
-
-    <!-- قسم إدارة المحلات والتمييز والحالة -->
-    <section class="space-y-3">
-        <h2 class="text-sm font-bold text-emerald-400">🏪 إدارة المحلات والتمييز والحالة</h2>
-        <div id="merchantsContainer" class="space-y-2">
-            <div class="text-center text-slate-500 py-3 text-xs">جاري تحميل المحلات...</div>
-        </div>
-    </section>
-
-    <!-- Modal VIP -->
-    <div id="vipModal" class="fixed inset-0 bg-slate-950/90 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 max-w-sm w-full space-y-3">
-            <h3 class="text-base font-black text-amber-400">⭐ إعداد إعلان VIP</h3>
-            <form id="vipForm" class="space-y-3">
-                <input type="hidden" id="vipShopId">
-                <input type="text" id="vipTitle" required placeholder="عنوان البانر الإعلاني..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
-                <textarea id="vipDesc" rows="2" placeholder="تفاصيل العرض..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-2.5 text-xs text-white"></textarea>
-                <div class="flex gap-2">
-                    <button type="submit" class="flex-1 bg-amber-400 text-slate-950 font-bold py-2 rounded-xl text-xs">حفظ وتفعيل ⚡</button>
-                    <button type="button" onclick="closeVipModal()" class="bg-slate-800 text-slate-400 px-3 py-2 rounded-xl text-xs">إلغاء</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <main class="max-w-4xl mx-auto mt-6 space-y-8">
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+            <h2 class="text-sm font-bold text-amber-400 uppercase">📥 مقترحات المحلات المعلقة من الزوار</h2>
+            <div id="subList" class="space-y-3"></div>
+        </section>
+    </main>
 
     <script>
         const SUPABASE_URL = "https://yyqhtxsysoyvpnruqegn.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL"; // حط مفتاح sb_publishable الخاص بـ flare هنا
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_ANON_KEY = "sb_publishable_iJR-7HZ-7sbCJa_LW_GHHg_57gwd_hL";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function checkAdminAuth() {
-            let pin = sessionStorage.getItem("admin_auth");
-            if (pin !== "1998") {
-                let inputPin = prompt("يا برنس، ادخل الرقم السري للأدمن:");
-                if (inputPin === "1998") {
-                    sessionStorage.setItem("admin_auth", "1998");
-                } else {
-                    alert("كلمة السر غير صحيحة!");
-                    window.location.href = "index.html";
-                }
-            }
-        }
+        async function loadAdmin() {
+            const { data } = await supabaseClient.from('community_submissions').select('*').eq('status', 'Pending');
+            const box = document.getElementById('subList');
+            box.innerHTML = '';
 
-        document.addEventListener("DOMContentLoaded", () => {
-            checkAdminAuth();
-            fetchReports();
-            fetchPending();
-            fetchMerchants();
+            if(!data || data.length === 0) { box.innerHTML = '<p class="text-xs text-slate-500">لا توجد اقتراحات معلقة حالياً.</p>'; return; }
 
-            document.getElementById("vipForm").addEventListener("submit", async (e) => {
-                e.preventDefault();
-                const id = document.getElementById("vipShopId").value;
-                const vip_banner_title = document.getElementById("vipTitle").value;
-                const vip_banner_desc = document.getElementById("vipDesc").value;
-
-                await _supabase.from('merchants').update({ is_vip: false }).neq('id', 0);
-                await _supabase.from('merchants').update({ is_vip: true, vip_banner_title, vip_banner_desc }).eq('id', id);
-                
-                alert("تم تفعيل إعلان الـ VIP بنجاح! 🚀");
-                closeVipModal();
-                fetchMerchants();
+            data.forEach(s => {
+                box.innerHTML += `
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-sm">${s.suggested_name}</h3>
+                            <p class="text-xs text-slate-400">${s.suggested_category} - ${s.suggested_phone} - ${s.suggested_address}</p>
+                        </div>
+                        <button onclick="approve('${s.id}', '${s.suggested_name}', '${s.suggested_category}', '${s.suggested_phone}', '${s.suggested_address}')" class="bg-emerald-600 text-slate-950 px-3 py-2 rounded-xl text-xs font-bold">قبول وإضافة فورية</button>
+                    </div>`;
             });
-        });
-
-        async function fetchReports() {
-            const { data } = await _supabase.from('reports').select('*');
-            const container = document.getElementById("reportsContainer");
-            if (!data || data.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-3 text-xs bg-slate-900/40 rounded-xl">لا توجد بلاغات تلاعب 👍</div>`;
-                return;
-            }
-            container.innerHTML = data.map(item => `
-                <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-3 flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-red-400 text-xs">محل: ${item.shop_name}</h4>
-                        <p class="text-[10px] text-slate-300 mt-1">السبب: ${item.reason} | مرسل البلاغ: ${item.user_phone}</p>
-                    </div>
-                    <button onclick="deleteReport(${item.id})" class="bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg text-[10px]">حذف البلاغ</button>
-                </div>
-            `).join('');
         }
 
-        async function deleteReport(id) {
-            await _supabase.from('reports').delete().eq('id', id);
-            fetchReports();
+        async function approve(id, name, category, phone, address) {
+            await supabaseClient.from('merchants').insert([{ name, category, phone, address }]);
+            await supabaseClient.from('community_submissions').update({ status: 'Approved' }).eq('id', id);
+            alert('تم إضافته للدليل الرئيسي بنجاح!');
+            loadAdmin();
         }
 
-        async function fetchPending() {
-            const { data } = await _supabase.from('pending_merchants').select('*').eq('status', 'pending');
-            const container = document.getElementById("pendingContainer");
-            if (!data || data.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-3 text-xs bg-slate-900/40 rounded-xl">لا توجد طلبات معلقة 👍</div>`;
-                return;
-            }
-            container.innerHTML = data.map(item => `
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-white text-xs">${item.name}</h4>
-                        <p class="text-[10px] text-slate-400">📍 ${item.street} | 📞 ${item.phone}</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="approveShop(${item.id}, '${item.name}', '${item.category}', '${item.street}', '${item.phone}')" class="bg-emerald-500 text-slate-950 px-2 py-1 rounded-lg text-[10px] font-bold">موافقة ✅</button>
-                        <button onclick="deletePending(${item.id})" class="bg-red-500/10 text-red-400 px-2 py-1 rounded-lg text-[10px] font-bold">رفض ❌</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function fetchMerchants() {
-            const { data } = await _supabase.from('merchants').select('*');
-            const container = document.getElementById("merchantsContainer");
-            if (!data || data.length === 0) {
-                container.innerHTML = `<div class="text-center text-slate-500 py-3 text-xs">لا توجد محلات مضافة.</div>`;
-                return;
-            }
-            container.innerHTML = data.map(item => `
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-white text-xs flex items-center gap-1">
-                            ${item.name} 
-                            ${item.is_vip ? '<span class="text-[9px] bg-amber-400 text-slate-950 px-1 py-0.2 rounded font-black">VIP</span>' : ''}
-                            ${item.is_top_ten ? '<span class="text-[9px] bg-orange-500 text-white px-1 py-0.2 rounded font-black">Top 10</span>' : ''}
-                        </h4>
-                        <p class="text-[10px] text-slate-400">📍 ${item.street}</p>
-                    </div>
-                    <div class="flex gap-1.5 items-center">
-                        <button onclick="toggleShopStatus(${item.id}, ${item.is_open !== false ? 'false' : 'true'})" class="bg-slate-800 px-2 py-1 rounded-lg text-[10px] font-bold ${item.is_open !== false ? 'text-emerald-400' : 'text-red-400'}">
-                            ${item.is_open !== false ? '🟢 مفتوح' : '🔴 مغلق'}
-                        </button>
-                        <button onclick="toggleTopTen(${item.id}, ${item.is_top_ten ? 'false' : 'true'})" class="bg-slate-800 text-amber-400 px-2 py-1 rounded-lg text-[10px] font-bold">
-                            ${item.is_top_ten ? 'إزالة Top 10' : 'Top 10 ⭐'}
-                        </button>
-                        <button onclick="openVipModal(${item.id})" class="bg-amber-400/10 text-amber-400 border border-amber-400/30 px-2 py-1 rounded-lg text-[10px] font-bold">VIP ⚡</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function toggleShopStatus(id, newStatus) {
-            await _supabase.from('merchants').update({ is_open: newStatus }).eq('id', id);
-            fetchMerchants();
-        }
-
-        async function toggleTopTen(id, status) {
-            await _supabase.from('merchants').update({ is_top_ten: status }).eq('id', id);
-            fetchMerchants();
-        }
-
-        function openVipModal(id) {
-            document.getElementById("vipShopId").value = id;
-            document.getElementById("vipModal").classList.remove("hidden");
-        }
-        function closeVipModal() {
-            document.getElementById("vipModal").classList.add("hidden");
-        }
-        async function approveShop(id, name, category, street, phone) {
-            await _supabase.from('merchants').insert([{ name, category, street, phone, is_open: true, has_delivery: true, is_top_ten: false, is_vip: false }]);
-            await deletePending(id);
-            fetchPending();
-            fetchMerchants();
-        }
-        async function deletePending(id) {
-            await _supabase.from('pending_merchants').delete().eq('id', id);
-            fetchPending();
-        }
-    </script>
-</body>
-</html>
-erchants();
-        }
-
-        function openVipModal(id) {
-            document.getElementById("vipShopId").value = id;
-            document.getElementById("vipModal").classList.remove("hidden");
-        }
-        function closeVipModal() {
-            document.getElementById("vipModal").classList.add("hidden");
-        }
-        async function approveShop(id, name, category, street, phone) {
-            await _supabase.from('merchants').insert([{ name, category, street, phone, is_open: true, has_delivery: true, is_top_ten: false, is_vip: false }]);
-            await deletePending(id);
-            fetchPending();
-            fetchMerchants();
-        }
-        async function deletePending(id) {
-            await _supabase.from('pending_merchants').delete().eq('id', id);
-            fetchPending();
-        }
+        window.onload = loadAdmin;
     </script>
 </body>
 </html>
