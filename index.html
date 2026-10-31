@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فلير | أول منصة محلية ذكية</title>
+    <title>فلير | أول منصة محلية ذكية في مصر.</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -16,7 +16,8 @@
     <header class="p-4 flex justify-between items-center glass sticky top-0 z-50">
         <div>
             <h1 class="text-xl font-extrabold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">فلير ⚡ Flair</h1>
-            <p class="text-[10px] text-slate-400">أول منصة محلية ذكية في مصر. محلاتك، عروضك، وخدماتك في جيبك بضغطة واحدة</p>
+            <p class="text-[10px] text-slate-400">أول منصة محلية ذكية في مصر.</p>
+            <p class="text-[10px] text-slate-400">محلاتك، عروضك، وخدماتك في جيبك بضغطة واحدة.</p>
         </div>
         <button onclick="openModal('suggestModal')" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3 py-2 rounded-xl transition shadow-lg">➕ أضف محل \ خدمة</button>
     </header>
@@ -36,7 +37,6 @@
 
         <!-- VIP Carousel Section -->
         <section>
-            <h2 class="text-xs font-semibold text-amber-400 uppercase tracking-wider mb-3">👑 نركن ال (VIP)</h2>
             <div id="vipCarousel" class="overflow-x-auto flex gap-4 pb-2 snap-x scrollbar-none"></div>
         </section>
 
@@ -56,7 +56,7 @@
     <!-- Suggest Modal -->
     <div id="suggestModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 space-y-4">
-            <h3 class="text-lg font-bold text-amber-400"> أضف محل جديد \ خدمة</h3>
+            <h3 class="text-lg font-bold text-amber-400"> أضف محل \ خدمة</h3>
             <input type="text" id="sName" placeholder="اسم المحل" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm">
             <input type="text" id="sCategory" placeholder="النشاط (مطعم، صيدلية...)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm">
             <input type="text" id="sPhone" placeholder="رقم الاتصال والموبايل" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm">
