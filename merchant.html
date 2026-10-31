@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة التجار | فلير</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 flex flex-col justify-center items-center">
+    <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-xl">
+        <h2 class="text-xl font-bold text-center bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">لوحة تحكم التاجر</h2>
+        
+        <!-- Login -->
+        <div id="loginBox" class="space-y-4">
+            <input type="text" id="mPhone" placeholder="أدخل رقم الموبايل المسجل" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm">
+            <button onclick="merchantLogin()" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm">دخول للوحة التحكم</button>
+        </div>
+
+        <!-- Dashboard Panel -->
+        <div id="dashBox" class="hidden space-y-4">
+            <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                <p id="mName" class="font-bold text-amber-400 text-sm"></p>
+                <p id="mStatus" class="text-xs text-slate-400 mt-1"></p>
+            </div>
+            
+            <button onclick="openModal('vipModal')" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold py-3 rounded-xl text-sm shadow-lg">✨ اشتراك VIP أسبوعي (500ج)</button>
+            <button onclick="openModal('offerModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-xl text-sm">🏷️ إضافة عرض اليوم الخاص بك</button>
+        </div>
+    </div>
+
+    <!-- VIP Pay Modal -->
+    <div id="vipModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 space-y-4 text-center">
+            <h3 class="text-lg font-bold text-amber-400">تفعيل اشتراك VIP</h3>
+            <p class="text-xs text-slate-300">حول 500 جنيه عبر إنستاباي أو فودافون كاش على الرقم:</p>
+            <div class="bg-slate-950 p-3 rounded-xl font-mono font-bold text-amber-400 text-sm">010xxxxxxxx</div>
+            <p class="text-xs text-slate-400">ثم أرسل سكرين التحويل عبر واتساب الإدارة للتفعيل الفوري (لمدة 7 أيام أوتوماتيك).</p>
+            <a id="waVipLink" href="#" target="_blank" class="block w-full bg-emerald-600 text-slate-950 font-bold py-3 rounded-xl text-sm">إرسال السكرين للواتساب 💬</a>
+            <button onclick="closeModal('vipModal')" class="w-full bg-slate-800 text-slate-300 py-2 rounded-xl text-xs">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- Add Offer Modal -->
+    <div id="offerModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 space-y-4">
+            <h3 class="text-lg font-bold text-amber-400">إضافة عرض جديد</h3>
+            <input type="text" id="oTitle" placeholder="عنوان العرض (مثلاً: خصم 20% على الوجبات)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm">
+            <textarea id="oDetails" placeholder="تفاصيل العرض بختصار..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm"></textarea>
+            <button onclick="submitOffer()" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm">نشر العرض فوراً</button>
+            <button onclick="closeModal('offerModal')" class="w-full bg-slate-800 text-slate-300 py-2 rounded-xl text-xs">إغلاق</button>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentMerchant = null;
+
+        async function merchantLogin() {
+            const phone = document.getElementById('mPhone').value;
+            const { data, error } = await supabaseClient.from('merchants').select('*').eq('phone', phone).single();
+            if(error || !data) { alert('رقم الموبايل غير مسجل في الدليل'); return; }
+            currentMerchant = data;
+            document.getElementById('loginBox').classList.add('hidden');
+            document.getElementById('dashBox').classList.remove('hidden');
+            document.getElementById('mName').innerText = `أهلاً بك، ${data.name}`;
+            document.getElementById('mStatus').innerText = data.is_vip ? 'باقة VIP مفعلة ⭐' : 'الحساب العادي مجاني';
+            document.getElementById('waVipLink').href = `https://wa.me/2010xxxxxxxx?text=طلب تفعيل VIP للمحل: ${encodeURIComponent(data.name)}`;
+        }
+
+        async function submitOffer() {
+            const title = document.getElementById('oTitle').value;
+            const details = document.getElementById('oDetails').value;
+            if(!title) { alert('اكتب عنوان العرض'); return; }
+            
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 7); // صالح لمدة 7 أيام
+
+            await supabaseClient.from('offers').insert([{ merchant_id: currentMerchant.id, offer_title: title, offer_details: details, end_date: endDate }]);
+            alert('تم نشر العرض بنجاح في تاب العروض!');
+            closeModal('offerModal');
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    </script>
+</body>
+</html>
